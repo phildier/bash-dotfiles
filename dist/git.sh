@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # git-related functions
 #
 
@@ -9,6 +11,7 @@ glpr() {
     BLUE='\033[01;34m'
     NONE='\033[0m'
 
+    # shellcheck disable=SC2016
     hub api \
         -t graphql \
         -f q="is:open is:pr author:phildier user:AgencyPMG archived:false" \
@@ -104,4 +107,8 @@ squashbranch() {
     merge_base=$(git merge-base HEAD master)
     git reset --soft "$merge_base"
     git branch --set-upstream-to=origin/"$branch_name" "$branch_name"
+}
+
+gffm() {
+    git fetch origin master:master
 }

@@ -4,6 +4,14 @@ dwh() {
     psql -h redshift.data.pmg.com -p 5439 -U phil@pmg.com datawarehouse "$@"
 }
 
+dwh-test() {
+    psql -h datawarehouse-test.coe8ikkn195e.us-east-1.redshift.amazonaws.com -p 5439 -U phil@pmg.com datawarehouse "$@"
+}
+
+dwh-devopsmetrics() {
+    psql -h redshift.data.pmg.com -p 5439 -U devopsmetrics datawarehouse "$@"
+}
+
 dwh-staging() {
     psql -h staging.redshift.data.pmg.com -p 5439 -U phil@pmg.com datawarehouse "$@"
 }

@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ -n "$TMUX_PANE" ]; then
+	exit
+fi
+
 # shellcheck disable=SC1091
 [ -f /etc/bash_completion ] && source /etc/bash_completion
 

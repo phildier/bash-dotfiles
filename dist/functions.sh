@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-vimruntime=`vim -e -T dumb --cmd 'exe "set t_cm=\<C-M>"|echo $VIMRUNTIME|quit' | tr -d '\015' `
+
+# shellcheck disable=SC2016
+vimruntime=$(vim -e -T dumb --cmd 'exe "set t_cm=\<C-M>"|echo $VIMRUNTIME|quit' | tr -d '\015')
+# shellcheck disable=SC2016
 [[ -z $vimruntime ]] && { echo 'Sorry, $VIMRUNTIME was not found' >&2; exit 1; }
 
 vless=$vimruntime/macros/less.sh
@@ -9,6 +12,7 @@ vless=$vimruntime/macros/less.sh
 # reloads functions
 sf()
 {
+	# shellcheck disable=SC1090
 	source ~/.bashrc
 }
 
@@ -182,8 +186,8 @@ mobile() {
 
 docked() {
 	# shellcheck disable=SC2207
-	displays=($(xrandr | awk '$3~/2560/{print $1}'))
-	xrandr --output eDP-1 --off --output "${displays[0]}" --auto --output "${displays[1]}" --auto --above "${displays[0]}"
+	displays=($(xrandr | awk '$3~/2560/{print $1}; $4~/2560/{print $1}'))
+	xrandr --output eDP-1-1 --off --output "${displays[0]}" --auto --output "${displays[1]}" --auto --above "${displays[0]}"
 	pactl set-default-sink "alsa_output.usb-Generic_USB_Audio_200901010001-00.HiFi__hw_Dock_1__sink"
 	pactl set-default-source "alsa_input.usb-Blue_Microphones_Yeti_Nano_1949SG003WS8_888-000302040606-00.analog-stereo"
 }
@@ -237,23 +241,30 @@ ctrlv() {
 }
 
 # start tmux environment with pre-split windows
+# or attach to existing session if it exists
 mx() {
 	local workdir=$1
 	cd "$workdir" || return
 
-	SESSION=$(tmux new-session -dP)
+	SESSION_NAME=$(basename "$PWD" | sed 's/\./-/g')
+	printf "\033]0;%s\007" "$SESSION_NAME"
 
-	tmux split-window -p 20 -v
-	tmux split-window -h
-	tmux select-pane -t 0
-	tmux split-window -h
-	tmux select-pane -t 0
+	if tmux list-sessions | grep "$SESSION_NAME" &>/dev/null; then
+		tmux attach-session -t "$SESSION_NAME"
+	else
+		SESSION=$(tmux new-session -dP -s "$SESSION_NAME")
+		tmux split-window -p 20 -v
+		tmux split-window -h
+		tmux select-pane -t 0
+		tmux split-window -h
+		tmux select-pane -t 0
 
-	tmux send-keys "vi" C-m
+		tmux send-keys "vi" C-m
 
-	tmux attach-session -t "$SESSION"
+		tmux attach-session -t "$SESSION"
+	fi
 }
- 
+
 # start tmux in current directory
 mxp() {
 	mx "$(pwd)"
@@ -284,19 +295,19 @@ oskyhosts() {
 	fi
 }
 
-vpn() {
-	if [ "$1" = "down" ]; then
-			nmcli connection down "$(nmcli connection show --active | awk '/vpn/{sub(/ [a-z0-9]+-[a-z0-9]+-.*$/,""); sub(/ +$/,""); print}')"
-			return
-	fi
-
-	if vpns=$(nmcli connection | awk '/vpn/{num++; sub(/ [a-z0-9]+-[a-z0-9]+-.*$/,""); sub(/ +$/,""); printf("%0d %s\n", num, $0)}'); then
-			echo "$vpns"
-			echo -n "which VPN?: "
-			read -r selection
-			nmcli connection up "$(echo "$vpns" | awk '$1~/^'"$selection"'$/ {$1=""; sub(/^ +/,""); print $0}')"
-	fi
-}
+#vpn() {
+#	if [ "$1" = "down" ]; then
+#			nmcli connection down "$(nmcli connection show --active | awk '/vpn/{sub(/ [a-z0-9]+-[a-z0-9]+-.*$/,""); sub(/ +$/,""); print}')"
+#			return
+#	fi
+#
+#	if vpns=$(nmcli connection | awk '/vpn/{num++; sub(/ [a-z0-9]+-[a-z0-9]+-.*$/,""); sub(/ +$/,""); printf("%0d %s\n", num, $0)}'); then
+#			echo "$vpns"
+#			echo -n "which VPN?: "
+#			read -r selection
+#			nmcli connection up "$(echo "$vpns" | awk '$1~/^'"$selection"'$/ {$1=""; sub(/^ +/,""); print $0}')"
+#	fi
+#}
 
 gilbert() {
 	pushd ~/Downloads/gilbert || return
@@ -321,10 +332,10 @@ cpmovies() {
 avl() {
 	if [ -n "$VAULT_ENV" ]; then
 		echo "logging in to $VAULT_ENV"
-		aws-vault login --assume-role-ttl=1h "$VAULT_ENV" "$@"
+		aws-vault login --duration=1h "$VAULT_ENV" "$@"
 	elif [ -n "$1" ]; then
 		echo "logging in to $1"
-		aws-vault login --assume-role-ttl=1h "$@"
+		aws-vault login --duration=1h "$@"
 	else
 		echo "usage: $0 <vault profile>"
 		echo "or set VAULT_ENV variable"
