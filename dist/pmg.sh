@@ -32,3 +32,7 @@ dwh_query() {
     outfile=${2:-/dev/stdout}
     dwh -P pager=off -P tuples_only -AF $'\t' -c "$1" -o "$outfile"
 }
+
+dwh-moroch() {
+    psql -h moroch.redshift.alliplatform.com -p 5439 -U pmguser datawarehouse "$@"
+}

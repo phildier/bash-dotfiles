@@ -186,7 +186,7 @@ mobile() {
 
 docked() {
 	# shellcheck disable=SC2207
-	displays=($(xrandr | awk '$3~/2560/{print $1}; $4~/2560/{print $1}'))
+	displays=($(xrandr | awk '$3~/2560/{print $1}; $4~/2560/{print $1}' | sort))
 	xrandr --output eDP-1-1 --off --output "${displays[0]}" --auto --output "${displays[1]}" --auto --above "${displays[0]}"
 	pactl set-default-sink "alsa_output.usb-Generic_USB_Audio_200901010001-00.HiFi__hw_Dock_1__sink"
 	pactl set-default-source "alsa_input.usb-Blue_Microphones_Yeti_Nano_1949SG003WS8_888-000302040606-00.analog-stereo"
@@ -249,7 +249,7 @@ mx() {
 	SESSION_NAME=$(basename "$PWD" | sed 's/\./-/g')
 	printf "\033]0;%s\007" "$SESSION_NAME"
 
-	if tmux list-sessions | grep "$SESSION_NAME" &>/dev/null; then
+	if tmux list-sessions | grep "$SESSION_NAME": &>/dev/null; then
 		tmux attach-session -t "$SESSION_NAME"
 	else
 		SESSION=$(tmux new-session -dP -s "$SESSION_NAME")

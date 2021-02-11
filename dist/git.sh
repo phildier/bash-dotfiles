@@ -62,7 +62,7 @@ gvl() {
 }
 
 gbo() {
-    chromium-browser "$(git remote -v | awk '/fetch/{print $2}' | sed 's#git@\([^:]\+\):#\1/#')"
+    exo-open --launch WebBrowser "$(git remote -v | awk '/fetch/{print $2}' | sed 's#git@\([^:]\+\):#\1/#')"
 }
 
 gbl() {
@@ -86,16 +86,16 @@ gtl() {
     git tag -l | sort -V
 }
 
+git_main_branch() {
+    git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@'
+}
+
 gcmp() {
-    if [ "$(pwd)" = "/home/phil/opensky/Opensky/opensky" ]; then
-        git checkout production && git pull
-    else
-        git checkout master && git pull
-    fi
+    git checkout "$(git_main_branch)" && git pull
 }
 
 gdmb() {
-    git diff "master...$(git rev-parse --abbrev-ref HEAD)" | vless
+    git diff "$(git_main_branch)...$(git rev-parse --abbrev-ref HEAD)" | vless
 }
 
 squashbranch() {
@@ -104,11 +104,15 @@ squashbranch() {
     gcmp
     git checkout "$branch_name"
     local merge_base
-    merge_base=$(git merge-base HEAD master)
+    merge_base=$(git merge-base HEAD "$(git_main_branch)")
     git reset --soft "$merge_base"
     git branch --set-upstream-to=origin/"$branch_name" "$branch_name"
 }
 
 gffm() {
-    git fetch origin master:master
+    git fetch origin "$(git_main_branch)":"$(git_main_branch)"
+}
+
+gmm() {
+    git merge "$(git_main_branch)"
 }
