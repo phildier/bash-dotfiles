@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# vim:set ts=4 sw=4 expandtab:
 
 # git-related functions
 #
@@ -19,6 +20,8 @@ glpr() {
             node {
                 ...on PullRequest{
                     title,
+                    additions,
+                    deletions,
                     url,
                     timelineItems(first: 20, itemTypes: [PULL_REQUEST_REVIEW, PULL_REQUEST_REVIEW_THREAD, PULL_REQUEST_COMMIT_COMMENT_THREAD]) {
                         nodes {
@@ -36,9 +39,9 @@ glpr() {
     }
     }' \
     | awk -v r="$RED" -v y="$YELLOW" -v g="$GREEN" -v b="$BLUE" -v n="$NONE" '
-        $1~/\.title/{print y"\nPR: "substr($0,index($0,$2))n} 
+        $1~/\.title/{printf "%s ", y"\nPR: "substr($0,index($0,$2))n; getline; printf "[%s,", y"+"$2n; getline; print r"-"$2n"]"} 
         $1~/\.url$/{print b$2n} 
-        $1~/\.author\.login$/{printf("- %s ",$2)} 
+        $1~/.author.login$/{printf("- %s ",$2)} 
         $1~/\.state$/{
             if($2=="APPROVED")
                 print "\t"g$2n 
@@ -62,7 +65,7 @@ gvl() {
 }
 
 gbo() {
-    exo-open --launch WebBrowser "$(git remote -v | awk '/fetch/{print $2}' | sed 's#git@\([^:]\+\):#\1/#')"
+    exo-open --launch WebBrowser "$(git remote -v | awk '/origin.*fetch/{print $2}' | sed 's#git@\([^:]\+\):#\1/#')"
 }
 
 gbl() {
@@ -86,8 +89,15 @@ gtl() {
     git tag -l | sort -V
 }
 
+# if this doesn't work, run
+# $ git remote set-head origin master (or main)
 git_main_branch() {
     git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@'
+}
+
+grsho() {
+  branch="${1:-master}"
+  git remote set-head origin "$branch"
 }
 
 gcmp() {

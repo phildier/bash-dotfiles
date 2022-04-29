@@ -4,10 +4,10 @@
 # shellcheck disable=SC2016
 vimruntime=$(vim -e -T dumb --cmd 'exe "set t_cm=\<C-M>"|echo $VIMRUNTIME|quit' | tr -d '\015')
 # shellcheck disable=SC2016
-[[ -z $vimruntime ]] && { echo 'Sorry, $VIMRUNTIME was not found' >&2; exit 1; }
+[[ -z $vimruntime ]] && { echo 'Sorry, $VIMRUNTIME was not found' >&2; }
 
 vless=$vimruntime/macros/less.sh
-[[ -x $vless ]] || { echo "Sorry, '$vless' is not accessible/executable" >&2; exit 1; }
+[[ -x $vless ]] || { echo "Sorry, '$vless' is not accessible/executable" >&2; }
 
 # reloads functions
 sf()
@@ -187,7 +187,7 @@ mobile() {
 docked() {
 	# shellcheck disable=SC2207
 	displays=($(xrandr | awk '$3~/2560/{print $1}; $4~/2560/{print $1}' | sort))
-	xrandr --output eDP-1-1 --off --output "${displays[0]}" --auto --output "${displays[1]}" --auto --above "${displays[0]}"
+	xrandr --output eDP-1-1 --off --output "${displays[0]}" --auto --output "${displays[1]}" --auto --below "${displays[0]}"
 	pactl set-default-sink "alsa_output.usb-Generic_USB_Audio_200901010001-00.HiFi__hw_Dock_1__sink"
 	pactl set-default-source "alsa_input.usb-Blue_Microphones_Yeti_Nano_1949SG003WS8_888-000302040606-00.analog-stereo"
 }
@@ -377,6 +377,29 @@ fin() {
 # find files named $1
 ff() {
     find . -type f -iname "$1"
+}
+
+###########################################
+# HOW MUCH RAM IS A PROCESS USING         #
+# #########################################
+function ram() {
+  local sum
+  local items
+  local app="$1"
+  if [ -z "$app" ]; then
+    echo "First argument - pattern to grep from processes"
+  else
+    sum=0
+    for i in `ps aux | grep -i "$app" | grep -v "grep" | awk '{print $6}'`; do
+      sum=$(($i + $sum))
+    done
+    sum=$(echo "scale=2; $sum / 1024.0" | bc)
+    if [[ $sum != "0" ]]; then
+      echo "${fg[blue]}${app}${reset_color} uses ${fg[green]}${sum}${reset_color} MBs of RAM."
+    else
+      echo "There are no processes with pattern '${fg[blue]}${app}${reset_color}' are running."
+    fi
+  fi
 }
  
 # vim:set syntax=sh:

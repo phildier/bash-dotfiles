@@ -2,6 +2,11 @@
 
 dwh() {
     psql -h redshift.data.pmg.com -p 5439 -U phil@pmg.com datawarehouse "$@"
+#    psql -h 3.93.105.232 -p 5439 -U phil@pmg.com datawarehouse "$@"
+}
+
+dwh-datauser() {
+    psql -h redshift.data.pmg.com -p 5439 -U datauser datawarehouse "$@"
 }
 
 dwh-test() {
@@ -35,4 +40,12 @@ dwh_query() {
 
 dwh-moroch() {
     psql -h moroch.redshift.alliplatform.com -p 5439 -U pmguser datawarehouse "$@"
+}
+
+dwh-moroch-datauser() {
+    psql -h moroch.redshift.alliplatform.com -p 5439 -U datauser datawarehouse "$@"
+}
+
+dwh-venus() {
+    psql -h venus.redshift.alliplatform.com -p 5439 -U pmguser datawarehouse "$@"
 }
