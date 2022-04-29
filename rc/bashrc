@@ -1,9 +1,5 @@
 #!/bin/bash
 
-if [ -n "$TMUX_PANE" ]; then
-	exit
-fi
-
 # shellcheck disable=SC1091
 [ -f /etc/bash_completion ] && source /etc/bash_completion
 
@@ -28,7 +24,7 @@ export HISTCONTROL=ignoredups
 export HISTFILESIZE=10000
 export HISTSIZE=10000
 export HISTIGNORE="gpb:gvl:gss:ls:bg:fg:disown:ls -l:cd: *"
-export PATH=$PATH:~/bin/
+export PATH=$PATH:~/bin/:~/.local/bin/
 
 # belongs in go setup recipe
 #export PATH=$PATH:/opt/go/bin:~/go/bin

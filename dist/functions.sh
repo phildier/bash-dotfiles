@@ -142,23 +142,6 @@ pasty() {
 	curl -F 'sprunge=<-' http://sprunge.us < "$file"
 }
 
-# lists or deletes merged branches
-# rm-merged		# lists
-# rm-merged 1      # deletes
-rm-merged() {
-	local branch=master
-
-	if [ "$(pwd)" = "/home/phil/opensky/Opensky/opensky" ]; then
-		branch=production
-	fi
-
-	if [ "$1" = "1" ]; then
-		git branch --merged | awk '$2!~/'"$branch"'/{print $1}' | xargs -n1 git branch -d
-	else 
-		git branch --merged | awk '$2!~/'"$branch"'/{print $1}'
-	fi
-}
-
 # executes galaxy rerun commands
 galaxy() {
 	if [ "$1" == "stubbs" ]; then
@@ -188,7 +171,7 @@ docked() {
 	# shellcheck disable=SC2207
 	displays=($(xrandr | awk '$3~/2560/{print $1}; $4~/2560/{print $1}' | sort))
 	xrandr --output eDP-1-1 --off --output "${displays[0]}" --auto --output "${displays[1]}" --auto --below "${displays[0]}"
-	pactl set-default-sink "alsa_output.usb-Generic_USB_Audio_200901010001-00.HiFi__hw_Dock_1__sink"
+	pactl set-default-sink "alsa_output.usb-Blue_Microphones_Yeti_Nano_1949SG003WS8_888-000302040606-00.analog-stereo"
 	pactl set-default-source "alsa_input.usb-Blue_Microphones_Yeti_Nano_1949SG003WS8_888-000302040606-00.analog-stereo"
 }
 

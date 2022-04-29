@@ -126,3 +126,17 @@ gffm() {
 gmm() {
     git merge "$(git_main_branch)"
 }
+
+# lists or deletes merged branches
+# rm-merged   # lists
+# rm-merged 1 # deletes
+rm-merged() {
+    local branch
+    branch="$(git_main_branch)"
+
+    if [ "$1" = "1" ]; then
+        git branch --merged | awk '$2!~/'"$branch"'/{print $1}' | xargs -n1 git branch -d
+    else 
+        git branch --merged | awk '$2!~/'"$branch"'/{print $1}'
+    fi
+}

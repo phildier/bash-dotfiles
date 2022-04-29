@@ -47,5 +47,5 @@ dwh-moroch-datauser() {
 }
 
 dwh-venus() {
-    psql -h venus.redshift.alliplatform.com -p 5439 -U pmguser datawarehouse "$@"
+    psql -h venus.redshift.alliplatform.com -p 5439 -U phil@pmg.com datawarehouse "$@"
 }
