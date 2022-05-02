@@ -12,7 +12,6 @@ glpr() {
     BLUE='\033[01;34m'
     NONE='\033[0m'
 
-    # shellcheck disable=SC2016
     hub api \
         -t graphql \
         -f q="is:open is:pr author:phildier user:AgencyPMG archived:false" \
@@ -20,6 +19,7 @@ glpr() {
             node {
                 ...on PullRequest{
                     title,
+                    changedFiles,
                     additions,
                     deletions,
                     url,
@@ -39,7 +39,7 @@ glpr() {
     }
     }' \
     | awk -v r="$RED" -v y="$YELLOW" -v g="$GREEN" -v b="$BLUE" -v n="$NONE" '
-        $1~/\.title/{printf "%s ", y"\nPR: "substr($0,index($0,$2))n; getline; printf "[%s,", y"+"$2n; getline; print r"-"$2n"]"} 
+        $1~/\.title/{printf "%s ", y"\nPR: "substr($0,index($0,$2))n; getline; printf "[%s files,", $2; getline; printf y" +%s, "n, $2; getline; print r"-"$2n"]"} 
         $1~/\.url$/{print b$2n} 
         $1~/.author.login$/{printf("- %s ",$2)} 
         $1~/\.state$/{
