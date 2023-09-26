@@ -6,15 +6,18 @@
 
 # list my open github PRs
 glpr() {
+    author=${1:-phildier}
+    is=${2:-open}
     RED='\033[01;31m'
     GREEN='\033[01;32m'
     YELLOW='\033[01;33m'
     BLUE='\033[01;34m'
     NONE='\033[0m'
 
+    # shellcheck disable=SC2016
     hub api \
         -t graphql \
-        -f q="is:open is:pr author:phildier user:AgencyPMG archived:false" \
+        -f q="is:$is is:pr author:$author user:AgencyPMG archived:false" \
         -f query='query($q: String!, $n: Int = 30, $after: String) {search(query:$q, type: ISSUE, first: $n, after: $after) {edges {
             node {
                 ...on PullRequest{
@@ -95,9 +98,18 @@ git_main_branch() {
     git symbolic-ref refs/remotes/origin/HEAD | sed 's@^refs/remotes/origin/@@'
 }
 
+git_current_branch_name() {
+    git rev-parse --abbrev-ref HEAD
+}
+
 grsho() {
   branch="${1:-master}"
   git remote set-head origin "$branch"
+}
+
+gsetupstream() {
+    branch=$(git_current_branch_name)
+    git branch --set-upstream-to=origin/"$branch" "$branch"
 }
 
 gcmp() {
@@ -139,4 +151,20 @@ rm-merged() {
     else 
         git branch --merged | awk '$2!~/'"$branch"'/{print $1}'
     fi
+}
+
+gitbehindlocal() {
+    git rev-list --left-right --count "$(git_main_branch)...$(git_current_branch_name)" \
+        | awk '{print "behind: "$1" ahead: "$2}'
+    git rev-list --left-right --pretty=oneline "$(git_main_branch)...$(git_current_branch_name)"
+}
+
+gitbehindremote() {
+    git rev-list --left-right --count "origin/$(git_main_branch)...origin/$(git_current_branch_name)" \
+        | awk '{print "behind: "$1" ahead: "$2}'
+    git rev-list --left-right --pretty=oneline "origin/$(git_main_branch)...origin/$(git_current_branch_name)"
+}
+
+gsl() {
+    git stash list --date=relative
 }

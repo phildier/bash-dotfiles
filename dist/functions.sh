@@ -2,7 +2,7 @@
 
 
 # shellcheck disable=SC2016
-vimruntime=$(vim -e -T dumb --cmd 'exe "set t_cm=\<C-M>"|echo $VIMRUNTIME|quit' | tr -d '\015')
+vimruntime=$(vim -e -T dumb --cmd 'exe "set t_cm=\<C-M>"|echo $VIMRUNTIME|quit' | tr -d '\015' | xargs)
 # shellcheck disable=SC2016
 [[ -z $vimruntime ]] && { echo 'Sorry, $VIMRUNTIME was not found' >&2; }
 
@@ -242,6 +242,9 @@ mx() {
 		tmux split-window -h
 		tmux select-pane -t 0
 
+		tmux send-keys "resize" C-m
+
+		sleep 1
 		tmux send-keys "vi" C-m
 
 		tmux attach-session -t "$SESSION"

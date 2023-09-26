@@ -30,7 +30,11 @@ dwh-jc() {
 }
 
 dwh-beats() {
-    psql -h beats-datawarehouse.coe8ikkn195e.us-east-1.redshift.amazonaws.com -p 5439 -U phil@pmg.com datawarehouse "$@"
+    psql -h beats.redshift.alliplatform.com -p 5439 -U phil@pmg.com datawarehouse "$@"
+}
+
+dwh-venus() {
+    psql -h venus.redshift.alliplatform.com -p 5439 -U phil@pmg.com datawarehouse "$@"
 }
 
 dwh_query() {
@@ -39,13 +43,29 @@ dwh_query() {
 }
 
 dwh-moroch() {
-    psql -h moroch.redshift.alliplatform.com -p 5439 -U pmguser datawarehouse "$@"
+    psql -h moroch.redshift.alliplatform.com -p 5439 -U phil@pmg.com datawarehouse "$@"
 }
 
-dwh-moroch-datauser() {
-    psql -h moroch.redshift.alliplatform.com -p 5439 -U datauser datawarehouse "$@"
+dwh-nike() {
+    psql -h nike.redshift.alliplatform.com -p 5439 -U phil@pmg.com datawarehouse "$@"
 }
 
-dwh-venus() {
-    psql -h venus.redshift.alliplatform.com -p 5439 -U phil@pmg.com datawarehouse "$@"
+dwh-digitalco() {
+    psql -h digitalco.redshift.alliplatform.com -p 5439 -U pmguser datawarehouse "$@"
+}
+
+dwh-searchdiscovery() {
+    psql -h searchdiscovery.redshift.alliplatform.com -p 5439 -U pmguser datawarehouse "$@"
+}
+
+dwh-searchdiscovery-clientcreds() {
+    psql -h searchdiscovery.redshift.alliplatform.com -p 5439 -U pmguser datawarehouse "$@"
+}
+
+dwh-mars() {
+    psql -h mars.redshift.alliplatform.com -p 5439 -U pmguser datawarehouse "$@"
+}
+
+dwh-bose() {
+    psql -h bose.redshift.alliplatform.com -p 5439 -U pmguser datawarehouse "$@"
 }
