@@ -232,7 +232,7 @@ mx() {
 	SESSION_NAME=$(basename "$PWD" | sed 's/\./-/g')
 	printf "\033]0;%s\007" "$SESSION_NAME"
 
-	if tmux list-sessions | grep "$SESSION_NAME": &>/dev/null; then
+	if tmux list-sessions | grep -e "^$SESSION_NAME:": &>/dev/null; then
 		tmux attach-session -t "$SESSION_NAME"
 	else
 		SESSION=$(tmux new-session -dP -s "$SESSION_NAME")
