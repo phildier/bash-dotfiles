@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+
 # shellcheck disable=SC1091
 [ -f /etc/bash_completion ] && source /etc/bash_completion
 

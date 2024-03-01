@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-
 # shellcheck disable=SC2016
 vimruntime=$(vim -e -T dumb --cmd 'exe "set t_cm=\<C-M>"|echo $VIMRUNTIME|quit' | tr -d '\015' | xargs)
 # shellcheck disable=SC2016
@@ -153,61 +152,6 @@ galaxy() {
 	fi
 }
 
-rr() {
-	~/projects/rerun/rerun "$@"
-}
-
-mobile() {
-	xrandr --output DP-1 --off --output DP-2 --off --output eDP-1 --auto
-
-	if lspci | grep "Radeon HD 8830M" &>/dev/null; then
-		switch_modes ati_mobile
-	else
-		switch_modes dell_mobile
-	fi
-}
-
-docked() {
-	# shellcheck disable=SC2207
-	displays=($(xrandr | awk '$3~/2560/{print $1}; $4~/2560/{print $1}' | sort))
-	xrandr --output eDP-1-1 --off --output "${displays[0]}" --auto --output "${displays[1]}" --auto --below "${displays[0]}"
-	pactl set-default-sink "alsa_output.usb-Blue_Microphones_Yeti_Nano_1949SG003WS8_888-000302040606-00.analog-stereo"
-	pactl set-default-source "alsa_input.usb-Blue_Microphones_Yeti_Nano_1949SG003WS8_888-000302040606-00.analog-stereo"
-}
-
-hdmi() {
-	xrandr --output eDP1 --auto --output HDMI1 --auto --same-as eDP1
-}
-
-switch_modes() {
-
-	mode=$1
-
-	xdotool set_desktop 0
-
-	case $mode in
-	nvidia_docked)
-		nvidia-settings --assign CurrentMetaMode="DP-3: nvidia-auto-select +0+0, DP-6: nvidia-auto-select +2560+0"
-		sudo cpufreq-set -g performance
-		;;
-	nvidia_mobile)
-		nvidia-settings --assign CurrentMetaMode="LVDS-0: nvidia-auto-select +0+0"
-		;;
-	ati_docked)
-		xrandr --output DP1 --auto --output DP2 --auto --right-of DP1 --output eDP1 --off
-		;;
-	ati_mobile)
-		xrandr --output DP1 --off --output DP2 --off --output eDP1 --auto
-		;;
-	esac
-
-	xrandr --dpi 96
-
-	for app in ~/.xdotool.d/*.sh; do
-		$app "$mode"
-	done
-}
-
 json_encode() {
 	ruby << EOF
 	require 'json'
@@ -334,7 +278,7 @@ ave() {
 		return
 	fi
 
-	aws-vault exec "$VAULT_ENV" -- "$@"
+	aws-vault exec -d 8h "$VAULT_ENV" -- "$@"
 }
 
 

@@ -1,12 +1,7 @@
 #!/usr/bin/env bash
 
 tf() {
-	if [ -z "$VAULT_ENV" ]; then
-		echo "VAULT_ENV is not set"
-		return
-	fi
-
-	aws-vault exec "$VAULT_ENV" -- terraform "$@"
+	ave terraform "$@"
 }
 
 tfi() {
