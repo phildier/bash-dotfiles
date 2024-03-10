@@ -53,7 +53,7 @@ set_xterm_title()
 # sshs to imp
 si()
 {
-	ssh phil@10.2.0.250
+	ssh -A phil@10.2.0.250
 }
 
 # echos todays date
@@ -139,17 +139,6 @@ svl() {
 pasty() {
 	local file=$1
 	curl -F 'sprunge=<-' http://sprunge.us < "$file"
-}
-
-# executes galaxy rerun commands
-galaxy() {
-	if [ "$1" == "stubbs" ]; then
-		# shellcheck disable=SC2086
-		~/projects/galaxy_chef/rerun/rerun -M /home/phil/projects/galaxy_chef/rerun/modules stubbs:${*:2}
-	else
-		# shellcheck disable=SC2086
-		~/projects/galaxy_chef/rerun/rerun -M /home/phil/projects/galaxy_chef/rerun/modules galaxy:$*
-	fi
 }
 
 json_encode() {
