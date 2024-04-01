@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # vim:set ts=4 sw=4 expandtab:
-
 # git-related functions
-#
 
 # list my open github PRs
 glpr() {
