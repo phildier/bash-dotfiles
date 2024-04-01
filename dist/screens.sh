@@ -19,8 +19,8 @@ docked() {
   elif [[ ${#displays[@]} -eq 2 ]]; then
     xrandr --output "${displays[0]}" --auto --output "${displays[1]}" --auto "--$where" "${displays[0]}"
   fi
-  pactl set-default-sink "alsa_output.usb-KTMicro_KT_USB_Audio_2020-02-20-0000-0000-0000--00.analog-stereo"
-  pactl set-default-source "alsa_input.usb-Blue_Microphones_Yeti_Nano_1949SG003WS8_888-000302040606-00.analog-stereo"
+  pactl set-default-sink "$(pactl list | awk '$1~/Name/ && $2~/output.*KTMicro/{print $2}' | head -n1)"
+  pactl set-default-source "$(pactl list | awk '$1~/Name/ && $2~/input.*Yeti/{print $2}')"
 }
 
 hdmi() {

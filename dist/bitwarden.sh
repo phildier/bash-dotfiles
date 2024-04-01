@@ -13,3 +13,7 @@ _bitwarden_hook() {
 if ! [[ "${PROMPT_COMMAND:-}" =~ _bitwarden_hook ]]; then
   PROMPT_COMMAND="_bitwarden_hook${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
 fi
+
+bwu() {
+  bw unlock --raw > ~/.config/bitwarden_session
+}
