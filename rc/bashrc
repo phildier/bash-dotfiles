@@ -25,7 +25,11 @@ fi
 
 ulimit -c unlimited
 
-export EDITOR=/usr/bin/vim
+if [ -f /home/phil/.asdf/shims/vim ]; then
+    export EDITOR=/home/phil/.asdf/shims/vim
+else
+    export EDITOR=/usr/bin/vim
+fi
 export HISTCONTROL=ignoredups
 export HISTFILESIZE=10000
 export HISTSIZE=10000

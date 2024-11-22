@@ -66,7 +66,7 @@ gvl() {
 }
 
 gbo() {
-    exo-open --launch WebBrowser "$(git remote -v | awk '/origin.*fetch/{print $2}' | sed 's#git@\([^:]\+\):#\1/#')"
+    xdg-open  "https://$(git remote -v | awk '/origin.*fetch/{print $2}' | sed 's#git@\([^:]\+\):#\1/#')"
 }
 
 gbl() {
