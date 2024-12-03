@@ -2,6 +2,7 @@
 # shellcheck disable=SC2162
 
 export JIRA_ASSIGNEE="Phil Dier"
+export JIRA_RESPONSIBLE_TEAM="Core"
 
 jira_setup() {
   jira_check_env
@@ -41,18 +42,20 @@ jlnc() {
 }
 
 jcs() {
+  summary=$1
+  body=$2
   jira_setup
 
   read -r -d '' cmd <<-EOF
   jira issue create \
     --type Story \
-    --project "$JIRA_PROJECT" \
-    --component "$JIRA_COMPONENT" \
-    --label "$JIRA_LABEL" \
-    --custom responsible-team="$JIRA_RESPONSIBLE_TEAM" \
+    --project $JIRA_PROJECT \
+    --component $JIRA_COMPONENT \
+    --label $JIRA_LABEL \
+    --custom responsible-team=$JIRA_RESPONSIBLE_TEAM \
     --web \
-    --summary "$1" \
-    --body "$2"
+    --summary $summary \
+    --body $body
 EOF
 
   echo "press enter to run:"
