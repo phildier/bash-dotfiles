@@ -169,3 +169,31 @@ gitbehindremote() {
 gsl() {
     git stash list --date=relative
 }
+
+ghorgusers() {
+    org=${1:-AgencyPMG}
+    raw=${2:-0}
+
+    response=$(hub api --paginate -X GET "/orgs/$org/members")
+    if [ "$raw" = "1" ]; then 
+        echo "$response"
+    else
+        echo "$response" | jq -r '.[].login'
+    fi
+}
+
+ghuserdetails() {
+    user=${1:-phildier}
+
+    hub api -X GET "/users/$user"
+}
+
+ghorgusersreport() {
+    org=${1:-AgencyPMG}
+
+    # shellcheck disable=SC2207
+    users=($(ghorgusers "$org"))
+    for user in "${users[@]}"; do
+        ghuserdetails "$user" | jq -r '[.login, .email, .name] | @csv'
+    done
+}
