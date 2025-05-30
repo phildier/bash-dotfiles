@@ -262,6 +262,7 @@ avl() {
 ave() {
     if [ -z "$VAULT_ENV" ]; then
         echo "VAULT_ENV is not set"
+        "$@"
         return
     fi
 
