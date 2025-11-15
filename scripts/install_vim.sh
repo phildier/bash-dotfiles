@@ -1,0 +1,11 @@
+    ASDF_VIM_CONFIG="--with-tlib=ncurses \
+        --with-compiledby=asdf \
+        --enable-multibyte \
+        --enable-cscope \
+        --enable-terminal \
+        --enable-perlinterp \
+        --enable-rubyinterp \
+        --enable-python3interp \
+        --enable-luainterp \
+        --enable-gui=yes \
+        --with-x" asdf install vim

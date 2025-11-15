@@ -30,11 +30,16 @@ if [ -f /home/phil/.asdf/shims/vim ]; then
 else
     export EDITOR=/usr/bin/vim
 fi
+
 export HISTCONTROL=ignoredups
 export HISTFILESIZE=10000
 export HISTSIZE=10000
 export HISTIGNORE="gpb:gvl:gss:ls:bg:fg:disown:ls -l:cd: *"
 export PATH=$PATH:~/bin/:~/.local/bin/
+
+if [[ $PATH != *\".asdf\"* ]]; then
+    export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
+fi
 
 # belongs in go setup recipe
 #export PATH=$PATH:/opt/go/bin:~/go/bin

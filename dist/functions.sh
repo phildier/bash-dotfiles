@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
 # shellcheck disable=SC2016
-vimruntime=$(vim -e -T dumb --cmd 'exe "set t_cm=\<C-M>"|echo $VIMRUNTIME|quit' | tr -d '\015' | xargs)
+#vimruntime=$(vim -e -T dumb --cmd 'exe "set t_cm=\<C-M>"|echo $VIMRUNTIME|quit' | tr -d '\015' | xargs)
 # shellcheck disable=SC2016
-[[ -z $vimruntime ]] && { echo 'Sorry, $VIMRUNTIME was not found' >&2; }
+#[[ -z $vimruntime ]] && { echo 'Sorry, $VIMRUNTIME was not found' >&2; }
 
-vless=$vimruntime/macros/less.sh
-[[ -x $vless ]] || { echo "Sorry, '$vless' is not accessible/executable" >&2; }
+#vless=$vimruntime/macros/less.sh
+#[[ -x $vless ]] || { echo "Sorry, '$vless' is not accessible/executable" >&2; }
 
 # reloads functions
 sf()
@@ -16,12 +16,12 @@ sf()
 }
 
 # execute vi and set xterm title to filename
-vi()
-{
-    set_xterm_title "$@"
-    vim "$@"
-    set_xterm_title "\$$(hostname -s)"
-}
+#vi()
+#{
+#    set_xterm_title "$@"
+#    vim "$@"
+#    set_xterm_title "\$$(hostname -s)"
+#}
 
 vless()
 {
@@ -46,90 +46,15 @@ today()
     date +%m%d%Y
 }
 
-# fixes filenames. lowercases and removes special characters
-fixnames()
-{
-    ext=$1;
-    changed=0;
-    for i in *"$ext"; do
-        fixone "$i"
-    done
-    echo "[-] fixed $changed files";
-}
-
-# fix one filename
-fixone()
-{
-    old=$*
-    # shellcheck disable=SC1117
-    sedcmd=(sed 's/\(\x27\|\"\|,\|!\|*\)//g')
-    new=$(echo "$old" | "${sedcmd[@]}")
-    sedcmd=(sed 's/\x26/and/g')
-    new=$(echo "$new" | "${sedcmd[@]}")
-    sedcmd=(sed 's/\x20\+/_/g')
-    new=$(echo "$new" | "${sedcmd[@]}")
-    if [[ "$old" != "$new" ]]; then
-            mv -- "$old" "$new"
-            changed=$((changed+1));
-            echo "[*]    fixed: $new";
-    else
-            echo "[o] unchanged: $new";
-    fi
-}
-
-# upload a file to spark5.com
-upl()
-{
-    local file=$1
-    scp "$file" ec2-user@spark5.com:/www/virtual/spark5.com/downloads/
-    echo "link: http://spark5.com/downloads/$file"
-}
-
 # generate a random password
 pw()
 {
     apg -a 0 -m 8 -x 8 -MLN -n 1
 }
 
-# scrape .jpg images from a page
-scrape()
-{
-    wget -r -l1 --span-hosts -nd -A.jpg "$@"
-}
-
-# lints modified php files
-checkphp()
-{
-    if [ -e .svn ]; then
-        svn status -q | awk '$2~/.php$/{print $2}' | xargs -l1 php -l
-    elif [ -e .git ]; then
-        git status -s | awk '$NF~/php$/{print $NF}' | xargs -l1 php -l
-    else 
-        echo "not a git or svn repo"
-    fi
-}
-
 # uppercases parameters
 upper() {
     echo "${@^^}"
-}
-
-# pipes svn diff through vim less
-svl() {
-    svn diff | /usr/share/vim/vim80/macros/less.sh
-}
-
-# uploads given file to sprunge, outputs url
-pasty() {
-    local file=$1
-    curl -F 'sprunge=<-' http://sprunge.us < "$file"
-}
-
-json_encode() {
-    ruby << EOF
-    require 'json'
-    puts IO.read('$1').to_json
-EOF
 }
 
 ctrlc() {
@@ -157,19 +82,14 @@ mx() {
     if tmux list-sessions | grep -e "^$SESSION_NAME:" &>/dev/null; then
         tmux attach-session -t "$SESSION_NAME"
     else
-        SESSION=$(tmux new-session -dP -s "$SESSION_NAME")
-        tmux split-window -p 20 -v
-        tmux split-window -h
-        tmux select-pane -t 0
-        tmux split-window -h
-        tmux select-pane -t 0
-
-        tmux send-keys "resize" C-m
-
-        sleep 1
-        tmux send-keys "vi" C-m
-
-        tmux attach-session -t "$SESSION"
+        tmux new-session -dP -s "$SESSION_NAME"
+        tmux attach-session -t "$SESSION_NAME" \; \
+             split-window -l 10% -v \; \
+             split-window -h \; \
+             select-pane -t 0 \; \
+             split-window -h \; \
+             select-pane -t 0 \; \
+             send-keys "vi" C-m
     fi
 }
 
