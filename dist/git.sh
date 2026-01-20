@@ -41,7 +41,7 @@ glpr() {
     }' \
     | awk -v r="$RED" -v y="$YELLOW" -v g="$GREEN" -v b="$BLUE" -v n="$NONE" '
         $1~/\.title/{printf "%s ", y"\nPR: "substr($0,index($0,$2))n; getline; printf "[%s files,", $2; getline; printf y" +%s, "n, $2; getline; print r"-"$2n"]"} 
-        $1~/\.url$/{print b$2n} 
+        $1~/\.url$/{print "`"b$2n"`"} 
         $1~/.author.login$/{printf("- %s ",$2)} 
         $1~/\.state$/{
             if($2=="APPROVED")
@@ -196,4 +196,21 @@ ghorgusersreport() {
     for user in "${users[@]}"; do
         ghuserdetails "$user" | jq -r '[.login, .email, .name] | @csv'
     done
+}
+
+gclone() {
+    repo=$1
+    if [ -z "$repo" ]; then
+        echo "Usage: gclone <repo>"
+        return 1
+    fi
+    # if there's no / in the repo, prepend AgencyPMG
+    if [[ "$repo" != *"/"* ]]; then
+        dir=$repo
+        repo="AgencyPMG/$repo"
+    else
+        dir=${repo#*/}
+    fi
+    echo "cloning $repo ..."
+    git clone git@github.com:"$repo".git "$dir"
 }

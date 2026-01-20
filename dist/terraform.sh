@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
 tf() {
-	ave terraform "$@"
+    ave terraform "$@"
 }
 
 tfi() {
-	tf init
+    tf init "$@"
 }
 
 tfp() {
-	tf plan -out=plan.out
+    tf plan -out=plan.out
 }
 
 tfa() {
-	tf apply plan.out
+    tf apply plan.out
 }

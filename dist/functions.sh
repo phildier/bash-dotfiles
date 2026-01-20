@@ -121,17 +121,6 @@ certinfo() {
     fi
 }
 
-oskyhosts() {
-    if hosts=$(awk '/HostName/ && /'"$1"'/ {num++; printf("%0d %s\n", num, $2)}' ~/.ssh/config.d/51_oskhosts); then
-            echo "$hosts"
-            echo -n "which host?: "
-            read -r selection
-            ssh "$(echo "$hosts" | awk '$1~/^'"$selection"'$/ {print $2}')"
-    else
-            echo "$1: no matches found"
-    fi
-}
-
 #vpn() {
 #    if [ "$1" = "down" ]; then
 #            nmcli connection down "$(nmcli connection show --active | awk '/vpn/{sub(/ [a-z0-9]+-[a-z0-9]+-.*$/,""); sub(/ +$/,""); print}')"
@@ -186,7 +175,7 @@ ave() {
         return
     fi
 
-    aws-vault exec -d 8h "$VAULT_ENV" -- "$@"
+    aws-vault exec "$VAULT_ENV" -- "$@"
 }
 
 
