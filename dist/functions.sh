@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 # shellcheck disable=SC2016
-#vimruntime=$(vim -e -T dumb --cmd 'exe "set t_cm=\<C-M>"|echo $VIMRUNTIME|quit' | tr -d '\015' | xargs)
+vimruntime=$(vim -e -T dumb --cmd 'exe "set t_cm=\<C-M>"|echo $VIMRUNTIME|quit' | tr -d '\015' | xargs)
 # shellcheck disable=SC2016
 #[[ -z $vimruntime ]] && { echo 'Sorry, $VIMRUNTIME was not found' >&2; }
 
-#vless=$vimruntime/macros/less.sh
+vless=$vimruntime/macros/less.sh
 #[[ -x $vless ]] || { echo "Sorry, '$vless' is not accessible/executable" >&2; }
 
 # reloads functions
@@ -178,6 +178,10 @@ ave() {
     aws-vault exec "$VAULT_ENV" -- "$@"
 }
 
+awc() {
+    # shellcheck disable=SC2086,SC2046
+    firefox "$(printf 'ext+container:name=%s&url=%s' $1 $(aws-sso console --profile "$1" -u printurl 2>&1 | jq -sRr @uri))"
+}
 
 # outputs epoch parameter in human-readable format
 fromepoch()
