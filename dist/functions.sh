@@ -1,12 +1,29 @@
 #!/usr/bin/env bash
 
-# shellcheck disable=SC2016
-vimruntime=$(vim -e -T dumb --cmd 'exe "set t_cm=\<C-M>"|echo $VIMRUNTIME|quit' | tr -d '\015' | xargs)
-# shellcheck disable=SC2016
-#[[ -z $vimruntime ]] && { echo 'Sorry, $VIMRUNTIME was not found' >&2; }
+_resolve_vless_cmd() {
+    local runtime script
 
-vless=$vimruntime/macros/less.sh
-#[[ -x $vless ]] || { echo "Sorry, '$vless' is not accessible/executable" >&2; }
+    if command -v vim >/dev/null 2>&1; then
+        # shellcheck disable=SC2016
+        runtime=$(vim -T dumb -Nu NONE -n --cmd 'echo $VIMRUNTIME | qall!' 2>&1 | tr -d '\015' | sed -E 's/\x1B\[[0-9;]*[A-Za-z]//g' | awk '{for(i=1;i<=NF;i++) if($i ~ /^\//) p=$i} END{print p}')
+        script="$runtime/macros/less.sh"
+        if [[ -x "$script" ]]; then
+            printf '%s\n' "$script"
+            return 0
+        fi
+    fi
+
+    if command -v nvim >/dev/null 2>&1; then
+        runtime=$(nvim --headless '+echo $VIMRUNTIME' +qa! 2>&1 | tr -d '\015' | awk '{for(i=1;i<=NF;i++) if($i ~ /^\//) p=$i} END{print p}')
+        script="$runtime/scripts/less.sh"
+        if [[ -x "$script" ]]; then
+            printf '%s\n' "$script"
+            return 0
+        fi
+    fi
+
+    printf '%s\n' "less"
+}
 
 # reloads functions
 sf()
@@ -25,7 +42,10 @@ sf()
 
 vless()
 {
-    $vless "$@"
+    local pager_cmd
+
+    pager_cmd=$(_resolve_vless_cmd)
+    "$pager_cmd" "$@"
 }
 
 set_xterm_title()
