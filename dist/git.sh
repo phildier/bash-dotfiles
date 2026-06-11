@@ -48,7 +48,8 @@ glpr() {
                 print "\t"g$2n 
             else
                 print "\t"r$2n 
-        }'
+        }' \
+    | less -RF
 }
 
 # shows git short-format status, with current branch
@@ -66,7 +67,7 @@ gvl() {
 }
 
 gbo() {
-    xdg-open  "https://$(git remote -v \
+    GTK_MODULES="" xdg-open  "https://$(git remote -v \
         | awk '/origin.*fetch/{print $2}' \
         | perl -pe 's#git@([^:]+):([^.]+)(\.git)?$#$1/$2#'
     )"

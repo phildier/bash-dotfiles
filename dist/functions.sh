@@ -179,8 +179,10 @@ ave() {
 }
 
 awc() {
-    # shellcheck disable=SC2086,SC2046
-    firefox "$(printf 'ext+container:name=%s&url=%s' $1 $(aws-sso console --profile "$1" -u printurl 2>&1 | jq -sRr @uri))"
+    p=$1
+    u=$(aws-sso console --profile "$p" -u printurl 2>&1) ||
+        { aws-sso login || return; u=$(aws-sso console --profile "$p" -u printurl 2>&1) || return; }
+    GTK_MODULES="" firefox "$(printf 'ext+container:name=%s&url=%s' "$p" "$(printf '%s' "$u" | jq -sRr @uri)")"
 }
 
 # outputs epoch parameter in human-readable format
