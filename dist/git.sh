@@ -40,14 +40,34 @@ glpr() {
     }
     }' \
     | awk -v r="$RED" -v y="$YELLOW" -v g="$GREEN" -v b="$BLUE" -v n="$NONE" '
-        $1~/\.title/{printf "%s ", y"\nPR: "substr($0,index($0,$2))n; getline; printf "[%s files,", $2; getline; printf y" +%s, "n, $2; getline; print r"-"$2n"]"} 
-        $1~/\.url$/{print "`"b$2n"`"} 
-        $1~/.author.login$/{printf("- %s ",$2)} 
-        $1~/\.state$/{
-            if($2=="APPROVED")
-                print "\t"g$2n 
+        function is_excluded(author) {
+            return author ~ /^(github|copilot)/
+        }
+
+        $1~/\.title/{
+            pr_idx++
+            printf "%s ", y"\nPR: "substr($0,index($0,$2))n
+            getline; printf "[%s files,", $2
+            getline; printf y" +%s, "n, $2
+            getline; print r"-"$2n"]"
+        }
+        $1~/\.url$/{print "`"b$2n"`"}
+        $1~/.author.login$/{author=$2}
+        $1~/\.state$/ {
+            if (is_excluded(author))
+                next
+
+            state=$2
+            if (state=="COMMENTED") {
+                if (comment_seen[pr_idx,author]++)
+                    next
+            }
+
+            printf("- %s ", author)
+            if (state=="APPROVED")
+                print "\t"g state n
             else
-                print "\t"r$2n 
+                print "\t"r state n
         }' \
     | less -RF
 }
